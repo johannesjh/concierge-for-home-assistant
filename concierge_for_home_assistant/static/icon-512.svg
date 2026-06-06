@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Kreis-Basis in der neuen Akzentfarbe -->
+  <circle cx="50" cy="50" r="50" fill="#03a9f4"/>
+  
+  <!-- Symmetrisches Haus-Symbol -->
+  <!-- Haus-Umriss -->
+  <path d="M50 25L25 50v30h50V50L50 25z" fill="#ffffff"/>
+  <!-- Tür in der Mitte -->
+  <path d="M40 80V55h20v25H40z" fill="#03a9f4"/>
+</svg>

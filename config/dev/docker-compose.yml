@@ -1,0 +1,28 @@
+services:
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    volumes:
+      - ./ha-config:/config
+    environment:
+      - TZ=Europe/Berlin
+    ports:
+      - "8123:8123"
+    restart: unless-stopped
+
+  cfh:
+    user: "${UID}:${GID}"
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    command: /app/.venv/bin/gunicorn --reload --bind 0.0.0.0:8000 "concierge_for_home_assistant.app:create_app('config.yaml')"
+    ports:
+      - "8000:8000"
+    environment:
+      - CFH_INSECURE_COOKIE=true
+      - PYTHONDONTWRITEBYTECODE=1
+    volumes:
+      - ./config.yaml:/app/config.yaml
+      - ../../concierge_for_home_assistant:/app/concierge_for_home_assistant
+      - ./secrets:/app/secrets
+    depends_on:
+      - homeassistant

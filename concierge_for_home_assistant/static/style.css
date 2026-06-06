@@ -1,0 +1,422 @@
+/*
+ * Copyright (C) 2026 johannesjh
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+:root {
+    /* Dark Mode (Standard) */
+    --bg-primary: #1a1a2e;
+    --bg-secondary: #16213e;
+    --bg-card: #0f3460;
+    --text-primary: #e4e4e4;
+    --text-secondary: #a0a0b0;
+    --accent: #03a9f4;
+    --accent-hover: #0288d1;
+    --success: #2ecc71;
+    --error: #e74c3c;
+    --unavailable: #636e72;
+    --radius: 12px;
+    --shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    --input-border: rgba(255, 255, 255, 0.1);
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        --bg-primary: #f0f2f5;
+        --bg-secondary: #ffffff;
+        --bg-card: #ffffff;
+        --text-primary: #1a1a2e;
+        --text-secondary: #5a6270;
+        --accent: #03a9f4;
+        --accent-hover: #0288d1;
+        --success: #27ae60;
+        --error: #c0392b;
+        --unavailable: #95a5a6;
+        --shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        --input-border: rgba(0, 0, 0, 0.15);
+    }
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100dvh;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ---- Header ---- */
+.app-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--bg-secondary);
+    box-shadow: var(--shadow);
+    gap: 8px;
+}
+
+.app-header h1 {
+    font-size: 1rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.user-badge {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--input-border);
+}
+
+.user-icon {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+    opacity: 0.7;
+}
+
+
+.refresh-icon {
+    transition: transform 0.3s;
+}
+
+.refresh-icon.spinning {
+    animation: spin 0.6s ease;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ---- Buttons ---- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    text-decoration: none;
+    color: white;
+}
+
+.btn:active {
+    transform: scale(0.97);
+}
+
+.btn-primary {
+    background: var(--accent);
+    width: 100%;
+}
+
+.btn-primary:hover {
+    background: var(--accent-hover);
+}
+
+.btn-small {
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border: 1px solid var(--input-border);
+}
+
+.btn-action {
+    background: var(--accent);
+    width: 100%;
+    padding: 12px;
+    font-size: 0.95rem;
+}
+
+.btn-toggle {
+    background: var(--accent);
+    color: white;
+    width: 100%;
+    padding: 12px;
+    font-size: 0.95rem;
+    border: none;
+    border-radius: var(--radius);
+}
+
+/* ---- Login ---- */
+.login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100dvh;
+    padding: 16px;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 360px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius);
+    padding: 32px 24px;
+    box-shadow: var(--shadow);
+}
+
+.login-card h1 {
+    text-align: center;
+    font-size: 1.3rem;
+    margin-bottom: 4px;
+}
+
+.subtitle {
+    text-align: center;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+    font-size: 0.9rem;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.error-message {
+    color: var(--error);
+    font-size: 0.85rem;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+/* ---- Dashboard ---- */
+.dashboard {
+    padding: 20px 16px;
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.view-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.view-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+}
+
+@media (min-width: 600px) {
+    .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.card {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--input-border);
+    display: flex;
+    flex-direction: column;
+}
+
+.card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.card-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.card-status {
+    font-size: 0.75rem;
+    padding: 3px 10px;
+    border-radius: 10px;
+    background: var(--unavailable);
+    color: white;
+    white-space: nowrap;
+}
+
+.card-status.available {
+    background: var(--success);
+}
+
+.card-status.unavailable {
+    background: var(--unavailable);
+}
+
+.status-value,
+.sensor-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.sensor-attributes {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+/* ---- Toggle status pill ---- */
+.toggle-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+
+.toggle-pill.status-on {
+    background: rgba(46, 204, 113, 0.18);
+    color: var(--success);
+    border: 1px solid rgba(46, 204, 113, 0.35);
+}
+
+.toggle-pill.status-off {
+    background: rgba(160, 160, 176, 0.12);
+    color: var(--text-secondary);
+    border: 1px solid rgba(160, 160, 176, 0.25);
+}
+
+/* ---- Static Info Card ---- */
+.staticinfo-text {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* ---- Toast ---- */
+.toast {
+    position: fixed;
+    bottom: 32px;
+    left: 16px;
+    right: 16px;
+    margin: 0 auto;
+    max-width: 400px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    padding: 16px 20px;
+    border-radius: var(--radius);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    font-size: 1rem;
+    font-weight: 500;
+    z-index: 200;
+    text-align: center;
+    border: 1px solid var(--input-border);
+    /* ÄNDERUNG: display: none im CSS definieren, statt Inline-Style */
+    display: none; 
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+}
+
+.toast.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.toast-icon {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 3;
+}
+
+.toast.success {
+    border-left: 4px solid var(--success);
+    color: var(--success);
+}
+
+.toast.error {
+    border-left: 4px solid var(--error);
+    color: var(--error);
+}

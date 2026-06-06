@@ -1,0 +1,99 @@
+<!--
+ Copyright (C) 2026 johannesjh
+ 
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+ 
+ You should have received a copy of the GNU Affero General Public License
+ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#1a1a2e" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#f0f2f5" media="(prefers-color-scheme: light)">
+    <title>{{ title }}</title>
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <link rel="icon" href="{{ url_for('static', filename='icon-192.svg') }}" sizes="192x192">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='apple-touch-icon.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta name="csrf-token" content="{{ session.csrf_token }}">
+</head>
+<body>
+    <header class="app-header">
+        <h1>{{ title }}</h1>
+        <div class="header-right">
+            <button id="refresh-btn" class="btn btn-small" title="Aktualisieren">
+                <svg class="refresh-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M23 4v6h-6"/><path d="M1 20v-6h6"/>
+                    <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+                </svg>
+            </button>
+            <span class="user-badge">
+                <svg class="user-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                {{ user }}
+            </span>
+            <button id="logout-btn" class="btn btn-small">Abmelden</button>
+        </div>
+    </header>
+    <main class="dashboard">
+        {% for view in views %}
+        <section class="view-section">
+            {% if views|length > 1 %}
+            <h2 class="view-title">{{ view.title }}</h2>
+            {% endif %}
+            <div class="cards-grid">
+                {% for card in view.cards %}
+                <div class="card" data-card-name="{{ card.name }}" data-card-type="{{ card.type }}">
+                    <div class="card-header">
+                        <span class="card-title">{{ card.label if card.label else card.name }}</span>
+                        {% if card.type == 'toggle' %}
+                        <div class="toggle-value toggle-pill" data-entity="{{ card.entity }}"></div>
+                        {% elif card.type not in ('action', 'staticinfo') %}
+                        <span class="card-status unavailable">Nicht verfügbar</span>
+                        {% endif %}
+                    </div>
+                    <div class="card-body" id="card-body-{{ card.name }}">
+                        {% if card.type == 'status' %}
+                            <div class="status-value" data-entity="{{ card.entity }}">--</div>
+                        {% elif card.type == 'sensor' %}
+                            <div class="sensor-value" data-entity="{{ card.entity }}">--</div>
+                            <div class="sensor-attributes"></div>
+                        {% elif card.type == 'toggle' %}
+                            <button class="btn btn-toggle" data-entity="{{ card.entity }}" data-card="{{ card.name }}">
+                                <span class="toggle-label">Umschalten</span>
+                            </button>
+                        {% elif card.type == 'action' %}
+                            <button class="btn btn-action" data-card="{{ card.name }}">
+                                {{ card.label if card.label else "Aktion ausführen" }}
+                            </button>
+                        {% elif card.type == 'staticinfo' %}
+                            <p class="staticinfo-text">{{ card.text if card.text else "" }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endfor %}
+    </main>
+    <div id="toast" class="toast"></div>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+    <script>
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("/service-worker.js");
+        }
+    </script>
+</body>
+</html>

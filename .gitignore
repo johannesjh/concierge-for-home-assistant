@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.venv/
+venv/
+env/
+
+# Secrets – niemals committen (Verzeichnis behalten, Inhalt ignorieren)
+**/secrets/*
+!**/secrets/.gitkeep
+# config/prod/config.yaml enthält produktive Zugangsdaten – nicht committen
+config/prod/config.yaml
+
+# HA Dev-Laufzeitdaten – nur configuration.yaml committen
+config/dev/ha-config/*
+!config/dev/ha-config/configuration.yaml
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Docker
+.docker/
+
+# Tools
+.ruff_cache/

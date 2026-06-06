@@ -1,0 +1,55 @@
+# yaml-language-server: $schema=../../config.schema.json
+home_assistant:
+  # Im Dev-Setup (docker-compose.dev.yml): Docker-interner Service-Name
+  # Im Produktiv-Setup: echte HA-URL, z.B. "http://192.168.1.10:8123"
+  url: "http://homeassistant:8123"
+
+  token_path: "/app/secrets/ha_token"
+
+  # Fallback-Titel, falls HA nicht erreichbar (optional)
+  title: "Mein Zuhause"
+
+roles:
+  garage_user:
+    views:
+      - garage
+
+views:
+  garage:
+    title: Garage
+    cards:
+      - dev_hinweis
+      - garage_taster
+      - test_toggle
+      - test_temperatur
+      - test_fenster
+
+cards:
+  dev_hinweis:
+    type: staticinfo
+    label: "Dev-Setup"
+    text: "Dies ist eine lokale Testinstanz. Die angezeigten Daten stammen aus einer isolierten Home Assistant Testinstanz – Änderungen hier haben keinen Einfluss auf echte Geräte."
+
+  garage_taster:
+    type: action
+    label: "Garagentor öffnen / schließen"
+    service:
+      domain: script
+      service: turn_on
+    data:
+      entity_id: script.garage_trigger
+
+  test_toggle:
+    type: toggle
+    label: "Test Schalter"
+    entity: input_boolean.test_schalter
+
+  test_temperatur:
+    type: sensor
+    label: "Test Temperatur"
+    entity: input_number.test_temperatur
+
+  test_fenster:
+    type: status
+    label: "Test Fenster"
+    entity: input_boolean.test_fenster

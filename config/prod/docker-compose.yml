@@ -1,0 +1,14 @@
+services:
+  cfh:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    container_name: concierge-for-home-assistant
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./config.yaml:/app/config.yaml
+      - ./secrets:/app/secrets
+    environment:
+      - FLASK_RUN_HOST=0.0.0.0
+    restart: unless-stopped

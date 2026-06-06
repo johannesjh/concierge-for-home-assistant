@@ -1,0 +1,250 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/johannesjh/concierge-for-home-assistant/config.schema.json",
+  "title": "Concierge for Home Assistant config.yaml",
+  "description": "Deklarative Konfiguration für Concierge for Home Assistant. Definiert Home-Assistant-Verbindung, Benutzer, Rollen, Views und Cards.",
+  "type": "object",
+  "required": ["home_assistant", "roles", "views", "cards"],
+  "additionalProperties": false,
+  "properties": {
+    "home_assistant": {
+      "description": "Verbindungseinstellungen zur Home Assistant Instanz.",
+      "type": "object",
+      "required": ["url", "token_path"],
+      "additionalProperties": false,
+      "properties": {
+        "url": {
+          "description": "URL der Home Assistant Instanz. Im Dev-Setup der Docker-interne Service-Name, im Produktiv-Setup die echte URL.",
+          "type": "string",
+          "format": "uri",
+          "examples": [
+            "http://homeassistant:8123",
+            "http://192.168.1.10:8123",
+            "https://ha.example.com"
+          ]
+        },
+        "token_path": {
+          "description": "Dateipfad zum Long-Lived Access Token für die Home Assistant REST API.",
+          "type": "string",
+          "default": "/app/secrets/ha_token",
+          "examples": ["/app/secrets/ha_token"]
+        },
+        "title": {
+          "description": "Fallback-Titel für das Dashboard, falls Home Assistant nicht erreichbar ist.",
+          "type": "string",
+          "default": "Home Assistant Gateway",
+          "examples": ["Mein Zuhause"]
+        }
+      }
+    },
+    "users": {
+        "description": "Benutzer, die sich bei Concierge anmelden können. Wird aus secrets/users.yaml geladen.",
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/user"
+      },
+      "minProperties": 1
+    },
+    "roles": {
+      "description": "Rollen, die Benutzern zugewiesen werden können. Jede Rolle definiert, welche Views sichtbar sind. Schlüssel ist der Rollenname.",
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/role"
+      }
+    },
+    "views": {
+      "description": "Views (Ansichten) im Dashboard. Jeder View enthält eine geordnete Liste von Cards. Schlüssel ist die View-ID.",
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/view"
+      }
+    },
+    "cards": {
+      "description": "Cards (Kacheln), die in Views referenziert werden können. Schlüssel ist die Card-ID.",
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/card"
+      }
+    }
+  },
+  "$defs": {
+    "user": {
+      "description": "Ein Benutzer mit Passwort-Hash und zugewiesenen Rollen.",
+      "type": "object",
+      "required": ["password_hash", "roles"],
+      "additionalProperties": false,
+      "properties": {
+        "password_hash": {
+          "description": "Werkzeug-kompatibler Passwort-Hash (scrypt). Erstellen mit: cfh hash-password",
+          "type": "string",
+          "examples": ["scrypt:32768:8:1$..."]
+        },
+        "roles": {
+          "description": "Liste der Rollen, die diesem Benutzer zugewiesen sind.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      }
+    },
+    "role": {
+      "description": "Eine Rolle mit zugewiesenen Views.",
+      "type": "object",
+      "required": ["views"],
+      "additionalProperties": false,
+      "properties": {
+        "views": {
+          "description": "Liste der View-IDs, auf die diese Rolle Zugriff hat.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "view": {
+      "description": "Eine Ansicht im Dashboard mit Titel und geordneter Liste von Cards.",
+      "type": "object",
+      "required": ["cards"],
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "description": "Angezeigter Titel des Views im Dashboard.",
+          "type": "string",
+          "examples": ["Garage", "Wohnzimmer"]
+        },
+        "cards": {
+          "description": "Geordnete Liste der Card-IDs, die in diesem View angezeigt werden.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "card": {
+      "description": "Eine Card (Kachel) im Dashboard. Der Typ bestimmt das Verhalten und die verfügbaren Felder.",
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "description": "Card-Typ.",
+          "type": "string",
+          "enum": ["status", "sensor", "toggle", "action", "staticinfo"]
+        },
+        "label": {
+          "description": "Anzeigetext der Card im Dashboard.",
+          "type": "string",
+          "examples": ["Garagentor öffnen / schließen", "Temperatur Wohnzimmer"]
+        }
+      },
+      "oneOf": [
+        { "$ref": "#/$defs/card_status" },
+        { "$ref": "#/$defs/card_sensor" },
+        { "$ref": "#/$defs/card_toggle" },
+        { "$ref": "#/$defs/card_action" },
+        { "$ref": "#/$defs/card_staticinfo" }
+      ]
+    },
+    "card_status": {
+      "description": "Status Card – zeigt den aktuellen Zustand einer HA-Entität an (z.B. offen/geschlossen, an/aus).",
+      "type": "object",
+      "required": ["type", "entity"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "status" },
+        "label": { "type": "string" },
+        "entity": {
+          "description": "HA-Entitäts-ID, deren Zustand angezeigt wird.",
+          "type": "string",
+          "examples": ["cover.garage", "binary_sensor.fenster"]
+        }
+      }
+    },
+    "card_sensor": {
+      "description": "Sensor Card – zeigt einen Messwert einer HA-Entität an (z.B. Temperatur, Luftfeuchtigkeit).",
+      "type": "object",
+      "required": ["type", "entity"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "sensor" },
+        "label": { "type": "string" },
+        "entity": {
+          "description": "HA-Entitäts-ID des Sensors.",
+          "type": "string",
+          "examples": ["sensor.temperature", "input_number.test_temperatur"]
+        }
+      }
+    },
+    "card_toggle": {
+      "description": "Toggle Card – zeigt den Zustand einer HA-Entität an und erlaubt das Ein-/Ausschalten.",
+      "type": "object",
+      "required": ["type", "entity"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "toggle" },
+        "label": { "type": "string" },
+        "entity": {
+          "description": "HA-Entitäts-ID, die geschaltet werden kann (z.B. input_boolean, switch, light).",
+          "type": "string",
+          "examples": ["input_boolean.test_schalter", "switch.licht", "light.terrace"]
+        }
+      }
+    },
+    "card_staticinfo": {
+      "description": "Static Info Card – zeigt einen statischen Hinweistext an, ohne Home Assistant abzufragen.",
+      "type": "object",
+      "required": ["type", "text"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "staticinfo" },
+        "label": { "type": "string" },
+        "text": {
+          "description": "Statischer Hinweistext, der auf der Card angezeigt wird.",
+          "type": "string",
+          "examples": ["Bitte config.yaml bearbeiten, um Entitäten hinzuzufügen."]
+        }
+      }
+    },
+    "card_action": {
+      "description": "Action Card – ein Button, der einen einmaligen HA-Service-Call auslöst (z.B. Skript starten).",
+      "type": "object",
+      "required": ["type", "service", "data"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "action" },
+        "label": { "type": "string" },
+        "service": {
+          "description": "Der HA-Service, der beim Drücken des Buttons aufgerufen wird.",
+          "type": "object",
+          "required": ["domain", "service"],
+          "additionalProperties": false,
+          "properties": {
+            "domain": {
+              "description": "HA-Service-Domain (z.B. 'script', 'light', 'switch').",
+              "type": "string",
+              "examples": ["script", "light", "switch"]
+            },
+            "service": {
+              "description": "HA-Service-Name innerhalb der Domain (z.B. 'turn_on', 'turn_off').",
+              "type": "string",
+              "examples": ["turn_on", "turn_off", "toggle"]
+            }
+          }
+        },
+        "data": {
+          "description": "Payload-Daten für den Service-Call (z.B. entity_id des Skripts).",
+          "type": "object",
+          "additionalProperties": true,
+          "examples": [
+            { "entity_id": "script.garage_trigger" }
+          ]
+        }
+      }
+    }
+  }
+}

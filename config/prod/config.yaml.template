@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=../../config.schema.json
+# Concierge for Home Assistant – Konfigurations-Template
+# Wird von `just setup config/prod` automatisch nach config.yaml kopiert und befüllt.
+
+home_assistant:
+  # URL zur Home Assistant Instanz
+  url: "https://ha.example.com"
+  # Pfad zum HA Token
+  token_path: "/app/secrets/ha_token"
+  # Fallback-Titel
+  title: "Mein Zuhause"
+
+users:
+  # Definiere hier deine Nutzer
+  # Passwort-Hash erstellen mit: just hash-password
+  user:
+    password_hash: "scrypt:32768:8:1$X47XzUqHts6J4yix$e186e6d9b85c27b1884eff9b8d93d501049ca3f517522a28068a6bf0f9a1ef539818d903ec407a5025d0dc4364bb1682c020b27b837029cd654b16648fb0f37c"
+    # Der obige Hash entspricht dem Passwort: test – bitte ersetzen!
+    roles:
+      - default
+
+roles:
+  default:
+    views:
+      - home
+
+views:
+  home:
+    title: Home
+    cards:
+      - hinweis
+
+cards:
+  hinweis:
+    type: staticinfo
+    label: "Erste Schritte"
+    text: "Bitte config/prod/config.yaml bearbeiten: Entitäten aus Home Assistant hinzufügen und diesen Hinweis entfernen."

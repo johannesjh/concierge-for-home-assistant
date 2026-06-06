@@ -1,0 +1,45 @@
+# Home Assistant – Dev/Test Konfiguration
+# Wird von docker-compose.dev.yml gemountet.
+
+homeassistant:
+  name: "My Home"
+  latitude: 48.1
+  longitude: 11.6
+  elevation: 520
+  unit_system: metric
+  time_zone: Europe/Berlin
+
+# Tastrelais: ein Script-Aufruf öffnet oder schließt die Garage.
+# Kein Status, kein Cover – nur ein Script.
+script:
+  garage_trigger:
+    alias: "Garage Taster"
+    sequence:
+      - service: persistent_notification.create
+        data:
+          title: "Garage Taster"
+          message: "Taster wurde betätigt (simuliert)"
+
+# Simulierte Schalter zum Testen der Toggle- und Status-Card
+input_boolean:
+  test_schalter:
+    name: "Test Schalter"
+    initial: false
+  test_fenster:
+    name: "Test Fenster"
+    initial: false
+
+# Simulierter Temperatursensor zum Testen der Sensor-Card
+input_number:
+  test_temperatur:
+    name: "Test Temperatur"
+    initial: 21.5
+    min: -20
+    max: 60
+    step: 0.5
+    unit_of_measurement: "°C"
+    mode: box
+
+# Logging
+logger:
+  default: warning
